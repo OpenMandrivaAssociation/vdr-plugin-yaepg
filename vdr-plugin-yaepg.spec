@@ -17,6 +17,9 @@ Source:		http://www.hoochvdr.info/files/vdr-%plugin-%version.tar.bz2
 # From http://users.tkk.fi/~rahrenbe/vdr/
 Patch0:		vdr-yaepg-0.0.2-finnish.diff
 
+# Use standard VDR logging mechanism instead of own logfile
+Patch1:		yaepg-logging.patch
+
 BuildRoot:	%{_tmppath}/%{name}-buildroot
 BuildRequires:	vdr-devel >= 1.4.1-6
 Requires:	vdr-abi = %vdr_abi
@@ -28,6 +31,7 @@ simulate the look and feel of a commercial IRD.
 %prep
 %setup -q -n %plugin-%version
 %patch0 -p1
+%patch1 -p1
 
 %build
 %vdr_plugin_build
