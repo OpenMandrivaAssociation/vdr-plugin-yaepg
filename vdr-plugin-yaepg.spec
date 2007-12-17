@@ -23,7 +23,6 @@ Patch1:		yaepg-logging.patch
 # Use standard types, from e-tobi repository
 Patch2:		yaepg-standard-types.patch
 
-BuildRoot:	%{_tmppath}/%{name}-buildroot
 BuildRequires:	vdr-devel >= 1.4.1-6
 Requires:	vdr-abi = %vdr_abi
 
