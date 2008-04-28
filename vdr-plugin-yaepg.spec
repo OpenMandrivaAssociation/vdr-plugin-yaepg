@@ -2,7 +2,7 @@
 %define plugin	yaepg
 %define name	vdr-plugin-%plugin
 %define version	0.0.2.1
-%define rel	16
+%define rel	17
 
 Summary:	VDR plugin: Yet Another EPG
 Name:		%name
