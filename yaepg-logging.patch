@@ -1,0 +1,103 @@
+diff -Nurp -x '*~' yaepg-0.0.2.1/yaepg.c yaepg-0.0.2.1-f/yaepg.c
+--- yaepg-0.0.2.1/yaepg.c	2006-01-13 07:02:23.000000000 +0200
++++ yaepg-0.0.2.1-f/yaepg.c	2007-07-20 04:38:16.000000000 +0300
+@@ -1242,11 +1242,6 @@ private:
+ 	int			lastChan;
+ 
+ 	/*
+-	 * Debugging
+-	 */
+-	static FILE		*log;
+-
+-	/*
+ 	 * Round a time down to a 30-minute boundary.
+ 	 */
+ 	time_t AdjustTime(time_t);
+@@ -1263,11 +1258,8 @@ public:
+ 	int ChangeTime(int);
+ 	void GetChannelListEnds(void);
+ 	void UpdateTime(void);
+-	static void LogMsg(eYlog_t, const char *fmt, ...);
+ };
+ 
+-FILE *cYaepg::log = NULL;
+-
+ cYaepg::cYaepg(void)
+ {
+ 	osd = NULL;
+@@ -1280,11 +1272,6 @@ cYaepg::cYaepg(void)
+ 	prevEventId = 0;
+ 
+ 	selChan = 0;
+-
+-	log = fopen("yaepg.log", "w+");
+-	if (log == NULL) {
+-		fprintf(stderr, "Could not open log file!\n");
+-	}
+ }
+ 
+ cYaepg::~cYaepg()
+@@ -1298,11 +1285,6 @@ cYaepg::~cYaepg()
+ 	if (InfoBitmap != NULL) {
+ 		delete InfoBitmap;
+ 	}
+-
+-	if (log) {
+-		fflush(log);
+-		fclose(log);
+-	}
+ }
+ 
+ void
+@@ -1964,32 +1946,6 @@ cYaepg::UpdateTime(void)
+ 	}
+ }
+ 
+-void
+-cYaepg::LogMsg(eYlog_t logType, const char *fmt, ...)
+-{
+-	va_list ap;
+-
+-	if (log) {
+-		switch (logType) {
+-		case YLOG_ERR:
+-			fprintf(log, "ERROR: ");
+-			break;
+-		case YLOG_INF:
+-			fprintf(log, "INFO: ");
+-			break;
+-		default:
+-			return;
+-		}
+-		va_start(ap, fmt);
+-		vfprintf(log, fmt, ap);
+-		va_end(ap);
+-		fflush(log);
+-	}
+-	else {
+-		fprintf(stderr, "LOG = NULL!!!\n");
+-	}
+-}
+-
+ /*
+  * Round the time down to a 30 minute boundary
+  */
+diff -Nurp -x '*~' yaepg-0.0.2.1/yaepg.h yaepg-0.0.2.1-f/yaepg.h
+--- yaepg-0.0.2.1/yaepg.h	2004-11-08 02:58:46.000000000 +0200
++++ yaepg-0.0.2.1-f/yaepg.h	2007-07-20 04:35:57.000000000 +0300
+@@ -13,13 +13,8 @@
+ #include <stdarg.h>
+ #include "i18n.h"
+ 
+-#define YAEPG_ERROR(...)		cYaepg::LogMsg(YLOG_ERR, __VA_ARGS__)
+-#define YAEPG_INFO(...)			cYaepg::LogMsg(YLOG_INF, __VA_ARGS__)
+-
+-typedef enum {
+-	YLOG_ERR	= 0,
+-	YLOG_INF	= 1
+-} eYlog_t;
++#define YAEPG_ERROR(...)		esyslog("yaepg: " __VA_ARGS__)
++#define YAEPG_INFO(...)			dsyslog("yaepg: " __VA_ARGS__)
+ 
+ static const char *VERSION        = "0.0.2";
+ static const char *DESCRIPTION    = "Yet Another EPG";

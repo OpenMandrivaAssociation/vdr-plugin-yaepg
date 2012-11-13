@@ -1,0 +1,27 @@
+#! /bin/sh /usr/share/dpatch/dpatch-run
+## 94_yaepg-1.5.0.dpatch by Thomas Günther <tom@toms-cafe.de>
+##
+## All lines beginning with `## DP:' are a description of the patch.
+## DP: Changes for VDR >= 1.5.0 (applicable to VDR >= 1.4.5).
+
+@DPATCH@
+--- yaepg-0.0.2/yaepg.c
++++ yaepg-0.0.2/yaepg.c
+@@ -1194,7 +1194,7 @@
+ 	cDateBox		*datebox;
+ 
+ 	cRecDlgBox		*recDlgBox;
+-	uint64			msgboxStart;
++	uint64_t		msgboxStart;
+ 	cMessageBox		*msgbox;
+ 
+ 	/*
+@@ -1220,7 +1220,7 @@
+ 	 * Direct Channel Change
+ 	 */
+ 	int			currChan;
+-	uint64			lastInput;
++	uint64_t		lastInput;
+ 
+ 	/*
+ 	 * The last possible starting channel for the grid.

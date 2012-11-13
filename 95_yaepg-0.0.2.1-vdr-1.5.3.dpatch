@@ -1,0 +1,25 @@
+#! /bin/sh /usr/share/dpatch/dpatch-run
+## 95_yaepg-0.0.2.1-vdr-1.5.3.dpatch by Stone <syphyr@gmail.com>
+##
+## Thomas G�nther <tom@toms-cafe.de>
+##   - Added compatibility to VDR < 1.5.3
+##
+## Anssi Hannula <anssi@mandriva.org
+##   - Dropped version change
+##
+## All lines beginning with `## DP:' are a description of the patch.
+## DP: Changes for VDR >= 1.5.3.
+
+@DPATCH@
+--- yaepg-0.0.2.1/yaepg.c
++++ yaepg-0.0.2.2/yaepg.c
+@@ -17,6 +17,9 @@
+ static const tColor highlight		= (tColor) 0xFF505050;
+ static const tColor lightgrey		= (tColor) 0xFFAAAAAA;
+ 
++#if APIVERSNUM >= 10503
++#define fontYaepg			fontSml
++#endif
+ #define fontChanBox			fontYaepg
+ #define fontTimeBox			fontYaepg
+ #define fontEventBox			fontYaepg

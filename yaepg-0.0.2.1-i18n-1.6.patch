@@ -1,0 +1,945 @@
+
+This is a semi-automatically created i18n adaptation patch and may contain
+errors (such as missing translations). This should only be used as a
+temporary measure until the upstream plugin maintainer fixes the plugin
+properly according to the instructions in i18n-to-gettext.pl.
+
+Created for Mandriva Linux packaging by Anssi Hannula <anssi@mandriva.org>.
+
+
+Index: yaepg-0.0.2.1/Makefile
+===================================================================
+--- yaepg-0.0.2.1/Makefile
++++ yaepg-0.0.2.1/Makefile	2008-04-25 12:58:27.000000000 +0300
+@@ -46,7 +46,7 @@
+ 
+ ### The object files (add further files here):
+ 
+-OBJS = $(PLUGIN).o i18n.o
++OBJS = $(PLUGIN).o 
+ 
+ ### Implicit rules:
+ 
+@@ -62,9 +62,34 @@
+ 
+ -include $(DEPFILE)
+ 
++### Internationalization (I18N):
++
++PODIR     = po
++LOCALEDIR = $(VDRDIR)/locale
++I18Npo    = $(wildcard $(PODIR)/*.po)
++I18Nmsgs  = $(addprefix $(LOCALEDIR)/, $(addsuffix /LC_MESSAGES/vdr-$(PLUGIN).mo, $(notdir $(foreach file, $(I18Npo), $(basename $(file))))))
++I18Npot   = $(PODIR)/$(PLUGIN).pot
++
++%.mo: %.po
++	msgfmt -c -o $@ $<
++
++$(I18Npot): $(wildcard *.[ch] *.[ch]xx *.cc *.[ch]pp *.hh)
++	xgettext -C -cTRANSLATORS --no-wrap --no-location -k -ktr -ktrNOOP --msgid-bugs-address='<http://qa.mandriva.com/>' -o $@ $^
++
++%.po: $(I18Npot)
++	msgmerge -U --no-wrap --no-location --backup=none -q $@ $<
++	@touch $@
++
++$(I18Nmsgs): $(LOCALEDIR)/%/LC_MESSAGES/vdr-$(PLUGIN).mo: $(PODIR)/%.mo
++	@mkdir -p $(dir $@)
++	cp $< $@
++
++.PHONY: i18n
++i18n: $(I18Nmsgs)
++
+ ### Targets:
+ 
+-all: libvdr-$(PLUGIN).so
++all: libvdr-$(PLUGIN).so i18n
+ 
+ libvdr-$(PLUGIN).so: $(OBJS)
+ 	$(CXX) $(CXXFLAGS) -shared $(OBJS) -o $@
+@@ -79,4 +104,5 @@
+ 	@echo Distribution package created as $(PACKAGE).tgz
+ 
+ clean:
++	@-rm -f $(PODIR)/*.mo $(PODIR)/*.pot
+ 	@-rm -f $(OBJS) $(DEPFILE) *.so *.tgz core* *~
+Index: yaepg-0.0.2.1/i18n.c
+===================================================================
+--- yaepg-0.0.2.1/i18n.c
++++ yaepg-0.0.2.1/i18n.c	2008-04-25 12:59:32.000000000 +0300
+@@ -1,433 +0,0 @@
+-/*
+- * i18n.c: Internationalization
+- *
+- * See the README file for copyright information and how to reach the author.
+- *
+- * $Id: i18n.c,v 1.3 2004/11/08 01:41:20 bball Exp $
+- */
+-
+-#include "i18n.h"
+-
+-const tI18nPhrase Phrases[] = {
+-  { "No Info",// English
+-    "Keine Daten verfügbar.",// Deutsch
+-    "",// Slovenski
+-    "",// Italiano
+-    "",// Nederlands
+-    "",// Português
+-    "",// Français
+-    "",// Norsk
+-    "",// suomi
+-    "",// Polski
+-    "",// Españo
+-    "",// ÅëëçíéêÜ
+-    "",// Svenska
+-    "",// Romaneste
+-    "",// Magyar
+-    "",// Català
+-#if VDRVERSNUM >= 10300
+-    "" // ÀãááÚØÙ
+-#endif
+-  },
+-  { "TV output format",
+-    "TV Ausgabe",
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-#if VDRVERSNUM >= 10300
+-    "" // TODO
+-#endif
+-  },
+-  { "Hide mainmenu entry",
+-    "Hauptmenüeintrag verstecken",
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-#if VDRVERSNUM >= 10300
+-    "" // TODO
+-#endif
+-  },
+-  { "Change channel automatically",
+-    "Kanal automatisch wechseln",
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-#if VDRVERSNUM >= 10300
+-    "" // TODO
+-#endif
+-  },
+-  { "Start:",
+-    "Anfang:",
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-#if VDRVERSNUM >= 10300
+-    "" // TODO
+-#endif
+-  },
+-  { "Stop:",
+-    "Halt:",
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-#if VDRVERSNUM >= 10300
+-    "" // TODO
+-#endif
+-  },
+-  { "Frequency:",
+-    "Frequenz:",
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-#if VDRVERSNUM >= 10300
+-    "" // TODO
+-#endif
+-  },
+-  { "Every",
+-    "Jeden",
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-#if VDRVERSNUM >= 10300
+-    "" // TODO
+-#endif
+-  },
+-  { "Mon",
+-    "Mo",
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-#if VDRVERSNUM >= 10300
+-    "" // TODO
+-#endif
+-  },
+-  { "Tue",
+-    "Di",
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-#if VDRVERSNUM >= 10300
+-    "" // TODO
+-#endif
+-  },
+-  { "Wed",
+-    "Mi",
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-#if VDRVERSNUM >= 10300
+-    "" // TODO
+-#endif
+-  },
+-  { "Thr",
+-    "Do",
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-#if VDRVERSNUM >= 10300
+-    "" // TODO
+-#endif
+-  },
+-  { "Fri",
+-    "Fr",
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-#if VDRVERSNUM >= 10300
+-    "" // TODO
+-#endif
+-  },
+-  { "Sat",
+-    "Sa",
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-#if VDRVERSNUM >= 10300
+-    "" // TODO
+-#endif
+-  },
+-  { "Sun",
+-    "So",
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-#if VDRVERSNUM >= 10300
+-    "" // TODO
+-#endif
+-  },
+-  { "Mon-Fri",
+-    "Mo-Fr",
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-#if VDRVERSNUM >= 10300
+-    "" // TODO
+-#endif
+-  },
+-  { "Sun-Sat",
+-    "So-Sa",
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-#if VDRVERSNUM >= 10300
+-    "" // TODO
+-#endif
+-  },
+-  { "Once",
+-    "Sobald",
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-#if VDRVERSNUM >= 10300
+-    "" // TODO
+-#endif
+-  },
+-  { "Timer added",
+-    "Timer hinzugefügt",
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-#if VDRVERSNUM >= 10300
+-    "" // TODO
+-#endif
+-  },
+-  { "Timer cancelled",
+-    "Timer annullierte",
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-#if VDRVERSNUM >= 10300
+-    "" // TODO
+-#endif
+-  },
+-  { "Time format",
+-    "Zeit-Format",
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-#if VDRVERSNUM >= 10300
+-    "" // TODO
+-#endif
+-  },
+-  { NULL }
+-  };
+Index: yaepg-0.0.2.1/i18n.h
+===================================================================
+--- yaepg-0.0.2.1/i18n.h
++++ yaepg-0.0.2.1/i18n.h	2008-04-25 12:58:27.000000000 +0300
+@@ -1,16 +0,0 @@
+-/*
+- * i18n.h: Internationalization
+- *
+- * See the README file for copyright information and how to reach the author.
+- *
+- * $Id: i18n.h,v 1.1 2004/11/01 03:37:29 bball Exp $
+- */
+-
+-#ifndef _I18N__H
+-#define _I18N__H
+-
+-#include <vdr/i18n.h>
+-
+-extern const tI18nPhrase Phrases[];
+-
+-#endif //_I18N__H
+Index: yaepg-0.0.2.1/yaepg.c
+===================================================================
+--- yaepg-0.0.2.1/yaepg.c
++++ yaepg-0.0.2.1/yaepg.c	2008-04-25 12:58:27.000000000 +0300
+@@ -769,13 +769,13 @@
+ #define DTBOX_HEIGHT			20
+ 
+ char *numToDay[7] = {
+-	"Sun",
+-	"Mon",
+-	"Tue",
+-	"Wed",
+-	"Thr",
+-	"Fri",
+-	"Sat"
++	trNOOP("Sun"),
++	trNOOP("Mon"),
++	trNOOP("Tue"),
++	trNOOP("Wed"),
++	trNOOP("Thr"),
++	trNOOP("Fri"),
++	trNOOP("Sat")
+ };
+ 
+ class cDateBox : public cTextBox {
+@@ -857,10 +857,10 @@
+ }
+ 
+ const char *recFreqStr[4] = {
+-	"Once",
+-	"Every",
+-	"Mon-Fri",
+-	"Sun-Sat"
++	trNOOP("Once"),
++	trNOOP("Every"),
++	trNOOP("Mon-Fri"),
++	trNOOP("Sun-Sat")
+ };
+ 
+ class cRecDlgBox {
+@@ -2038,7 +2038,7 @@
+ bool cPluginYaepg::Start(void)
+ {
+ 	// Start any background activities the plugin shall perform.
+-	RegisterI18n(Phrases);
++	
+ 	return true;
+ }
+ 
+Index: yaepg-0.0.2.1/yaepg.h
+===================================================================
+--- yaepg-0.0.2.1/yaepg.h
++++ yaepg-0.0.2.1/yaepg.h	2008-04-25 12:58:27.000000000 +0300
+@@ -11,13 +11,13 @@
+ 
+ #include <vdr/plugin.h>
+ #include <stdarg.h>
+-#include "i18n.h"
++
+ 
+ #define YAEPG_ERROR(...)		esyslog("yaepg: " __VA_ARGS__)
+ #define YAEPG_INFO(...)			dsyslog("yaepg: " __VA_ARGS__)
+ 
+ static const char *VERSION        = "0.0.2";
+-static const char *DESCRIPTION    = "Yet Another EPG";
+-static const char *MAINMENUENTRY  = "Yaepg";
++static const char *DESCRIPTION    = trNOOP("Yet Another EPG");
++static const char *MAINMENUENTRY  = trNOOP("Yaepg");
+ 
+ #endif /* _YAEPG__H */
+Index: yaepg-0.0.2.1/po/de_DE.po
+===================================================================
+--- yaepg-0.0.2.1/po/de_DE.po
++++ yaepg-0.0.2.1/po/de_DE.po	2008-04-25 12:58:27.000000000 +0300
+@@ -0,0 +1,112 @@
++# VDR yaepg plugin language source file.
++# Copyright (C) YEAR THE VDR-yaepg'S COPYRIGHT HOLDER
++# This file is distributed under the same license as the VDR-yaepg package.
++# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
++#
++msgid ""
++msgstr ""
++"Project-Id-Version: VDR-yaepg\n"
++"Report-Msgid-Bugs-To: http://qa.mandriva.com/\n"
++"POT-Creation-Date: 2008-04-25 12:58+0300\n"
++"PO-Revision-Date: 2008-04-25 12:58+0300\n"
++"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
++"Language-Team: <vdr@linuxtv.org>\n"
++"MIME-Version: 1.0\n"
++"Content-Type: text/plain; charset=ISO-8859-15\n"
++"Content-Transfer-Encoding: 8bit\n"
++
++#: yaepg.c:686 yaepg.c:687 yaepg.c:743
++msgid "No Info"
++msgstr "Keine Daten verfügbar."
++
++#: yaepg.c:772
++msgid "Sun"
++msgstr "So"
++
++#: yaepg.c:773
++msgid "Mon"
++msgstr "Mo"
++
++#: yaepg.c:774
++msgid "Tue"
++msgstr "Di"
++
++#: yaepg.c:775
++msgid "Wed"
++msgstr "Mi"
++
++#: yaepg.c:776
++msgid "Thr"
++msgstr "Do"
++
++#: yaepg.c:777
++msgid "Fri"
++msgstr "Fr"
++
++#: yaepg.c:778
++msgid "Sat"
++msgstr "Sa"
++
++#: yaepg.c:860
++msgid "Once"
++msgstr "Sobald"
++
++#: yaepg.c:861
++msgid "Every"
++msgstr "Jeden"
++
++#: yaepg.c:862
++msgid "Mon-Fri"
++msgstr "Mo-Fr"
++
++#: yaepg.c:863
++msgid "Sun-Sat"
++msgstr "So-Sa"
++
++#: yaepg.c:906
++msgid "Start:"
++msgstr "Anfang:"
++
++#: yaepg.c:914
++msgid "Stop:"
++msgstr "Halt:"
++
++#: yaepg.c:922
++msgid "Frequency:"
++msgstr "Frequenz:"
++
++#: yaepg.c:1626
++msgid "Timer added"
++msgstr "Timer hinzugefügt"
++
++#: yaepg.c:1637
++msgid "Timer cancelled"
++msgstr "Timer annullierte"
++
++#: yaepg.c:2095
++msgid "TV output format"
++msgstr "TV Ausgabe"
++
++#: yaepg.c:2096
++msgid "Hide mainmenu entry"
++msgstr "Hauptmenüeintrag verstecken"
++
++#: yaepg.c:2097
++msgid "Channel Change"
++msgstr ""
++
++#: yaepg.c:2098
++msgid "Time format"
++msgstr "Zeit-Format"
++
++#: yaepg.c:2099
++msgid "Channel Order"
++msgstr ""
++
++#: yaepg.h:20
++msgid "Yet Another EPG"
++msgstr "Yet Another EPG"
++
++#: yaepg.h:21
++msgid "Yaepg"
++msgstr "Yaepg"
+Index: yaepg-0.0.2.1/po/fi_FI.po
+===================================================================
+--- yaepg-0.0.2.1/po/fi_FI.po
++++ yaepg-0.0.2.1/po/fi_FI.po	2008-04-25 12:58:27.000000000 +0300
+@@ -0,0 +1,112 @@
++# VDR yaepg plugin language source file.
++# Copyright (C) YEAR THE VDR-yaepg'S COPYRIGHT HOLDER
++# This file is distributed under the same license as the VDR-yaepg package.
++# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
++#
++msgid ""
++msgstr ""
++"Project-Id-Version: VDR-yaepg\n"
++"Report-Msgid-Bugs-To: http://qa.mandriva.com/\n"
++"POT-Creation-Date: 2008-04-25 12:58+0300\n"
++"PO-Revision-Date: 2008-04-25 12:58+0300\n"
++"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
++"Language-Team: <vdr@linuxtv.org>\n"
++"MIME-Version: 1.0\n"
++"Content-Type: text/plain; charset=ISO-8859-15\n"
++"Content-Transfer-Encoding: 8bit\n"
++
++#: yaepg.c:686 yaepg.c:687 yaepg.c:743
++msgid "No Info"
++msgstr "Ei ohjelmaa"
++
++#: yaepg.c:772
++msgid "Sun"
++msgstr "Su"
++
++#: yaepg.c:773
++msgid "Mon"
++msgstr "Ma"
++
++#: yaepg.c:774
++msgid "Tue"
++msgstr "Ti"
++
++#: yaepg.c:775
++msgid "Wed"
++msgstr "Ke"
++
++#: yaepg.c:776
++msgid "Thr"
++msgstr "To"
++
++#: yaepg.c:777
++msgid "Fri"
++msgstr "Pe"
++
++#: yaepg.c:778
++msgid "Sat"
++msgstr "La"
++
++#: yaepg.c:860
++msgid "Once"
++msgstr "Kerran"
++
++#: yaepg.c:861
++msgid "Every"
++msgstr "Aina"
++
++#: yaepg.c:862
++msgid "Mon-Fri"
++msgstr "Ma-Pe"
++
++#: yaepg.c:863
++msgid "Sun-Sat"
++msgstr "Ma-Su"
++
++#: yaepg.c:906
++msgid "Start:"
++msgstr "Alkaa:"
++
++#: yaepg.c:914
++msgid "Stop:"
++msgstr "Loppuu:"
++
++#: yaepg.c:922
++msgid "Frequency:"
++msgstr "Taajuus:"
++
++#: yaepg.c:1626
++msgid "Timer added"
++msgstr "Ajastin lisätty"
++
++#: yaepg.c:1637
++msgid "Timer cancelled"
++msgstr "Ajastin poistettu"
++
++#: yaepg.c:2095
++msgid "TV output format"
++msgstr "TV:n kuvaformaatti"
++
++#: yaepg.c:2096
++msgid "Hide mainmenu entry"
++msgstr "Piilota valinta päävalikosta"
++
++#: yaepg.c:2097
++msgid "Channel Change"
++msgstr ""
++
++#: yaepg.c:2098
++msgid "Time format"
++msgstr "Kellonajan esitysmuoto"
++
++#: yaepg.c:2099
++msgid "Channel Order"
++msgstr ""
++
++#: yaepg.h:20
++msgid "Yet Another EPG"
++msgstr "Vaihtoehtoinen ohjelmaopas"
++
++#: yaepg.h:21
++msgid "Yaepg"
++msgstr "Yaepg"
+Index: yaepg-0.0.2.1/po/yaepg.pot
+===================================================================
+--- yaepg-0.0.2.1/po/yaepg.pot
++++ yaepg-0.0.2.1/po/yaepg.pot	2008-04-25 12:58:27.000000000 +0300
+@@ -0,0 +1,113 @@
++# SOME DESCRIPTIVE TITLE.
++# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
++# This file is distributed under the same license as the PACKAGE package.
++# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
++#
++#, fuzzy
++msgid ""
++msgstr ""
++"Project-Id-Version: PACKAGE VERSION\n"
++"Report-Msgid-Bugs-To: http://qa.mandriva.com/\n"
++"POT-Creation-Date: 2008-04-25 12:58+0300\n"
++"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
++"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
++"Language-Team: LANGUAGE <LL@li.org>\n"
++"MIME-Version: 1.0\n"
++"Content-Type: text/plain; charset=CHARSET\n"
++"Content-Transfer-Encoding: 8bit\n"
++
++#: yaepg.c:686 yaepg.c:687 yaepg.c:743
++msgid "No Info"
++msgstr ""
++
++#: yaepg.c:772
++msgid "Sun"
++msgstr ""
++
++#: yaepg.c:773
++msgid "Mon"
++msgstr ""
++
++#: yaepg.c:774
++msgid "Tue"
++msgstr ""
++
++#: yaepg.c:775
++msgid "Wed"
++msgstr ""
++
++#: yaepg.c:776
++msgid "Thr"
++msgstr ""
++
++#: yaepg.c:777
++msgid "Fri"
++msgstr ""
++
++#: yaepg.c:778
++msgid "Sat"
++msgstr ""
++
++#: yaepg.c:860
++msgid "Once"
++msgstr ""
++
++#: yaepg.c:861
++msgid "Every"
++msgstr ""
++
++#: yaepg.c:862
++msgid "Mon-Fri"
++msgstr ""
++
++#: yaepg.c:863
++msgid "Sun-Sat"
++msgstr ""
++
++#: yaepg.c:906
++msgid "Start:"
++msgstr ""
++
++#: yaepg.c:914
++msgid "Stop:"
++msgstr ""
++
++#: yaepg.c:922
++msgid "Frequency:"
++msgstr ""
++
++#: yaepg.c:1626
++msgid "Timer added"
++msgstr ""
++
++#: yaepg.c:1637
++msgid "Timer cancelled"
++msgstr ""
++
++#: yaepg.c:2095
++msgid "TV output format"
++msgstr ""
++
++#: yaepg.c:2096
++msgid "Hide mainmenu entry"
++msgstr ""
++
++#: yaepg.c:2097
++msgid "Channel Change"
++msgstr ""
++
++#: yaepg.c:2098
++msgid "Time format"
++msgstr ""
++
++#: yaepg.c:2099
++msgid "Channel Order"
++msgstr ""
++
++#: yaepg.h:20
++msgid "Yet Another EPG"
++msgstr ""
++
++#: yaepg.h:21
++msgid "Yaepg"
++msgstr ""
