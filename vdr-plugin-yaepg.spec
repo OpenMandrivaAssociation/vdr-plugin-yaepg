@@ -2,7 +2,7 @@
 %define plugin	yaepg
 %define name	vdr-plugin-%plugin
 %define version	0.0.2.1
-%define rel	19
+%define rel	20
 
 Summary:	VDR plugin: Yet Another EPG
 Name:		%name
@@ -21,7 +21,6 @@ Patch2:		yaepg-standard-types.patch
 Patch3:		94_yaepg-1.3.38.dpatch
 Patch4:		95_yaepg-0.0.2.1-vdr-1.5.3.dpatch
 Patch5:		yaepg-0.0.2.1-i18n-1.6.patch
-BuildRoot:	%{_tmppath}/%{name}-buildroot
 BuildRequires:	vdr-devel >= 1.6.0
 Requires:	vdr-abi = %vdr_abi
 
@@ -42,17 +41,7 @@ simulate the look and feel of a commercial IRD.
 %vdr_plugin_build
 
 %install
-rm -rf %{buildroot}
 %vdr_plugin_install
-
-%clean
-rm -rf %{buildroot}
-
-%post
-%vdr_plugin_post %plugin
-
-%postun
-%vdr_plugin_postun %plugin
 
 %files -f %plugin.vdr
 %defattr(-,root,root)
