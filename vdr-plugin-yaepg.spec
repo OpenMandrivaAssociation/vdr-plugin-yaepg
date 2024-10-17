@@ -6,7 +6,7 @@ Version:	0.0.2.1
 Release:	22
 Group:		Video
 License:	GPL
-URL:		http://www.hoochvdr.info/
+URL:		https://www.hoochvdr.info/
 # http://www.hoochvdr.info/modules.php?name=Forums&file=viewtopic&t=98
 Source:		http://www.hoochvdr.info/files/vdr-%plugin-%{version}.tar.bz2
 # Use standard VDR logging mechanism instead of own logfile
